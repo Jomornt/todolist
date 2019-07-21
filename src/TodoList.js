@@ -1,47 +1,83 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { 
   getInputChangeAction,
   addItemAction,
-  deleteItemAction
+  deleteItemAction,
+  chooseChangeAction
 } from './store/actionCreator'
-// import 'antd/dist/antd.css';
-// import { List } from 'antd';
+import {
+  HeaderWrapper,
+  InputWrapper,
+  BtnWrapper
+} from './style';
+import 'antd/dist/antd.css';
+import {
+  Input, 
+  Button,
+  List,
+  Radio
+} from 'antd';
 
-class TodoList extends Component {
-  render() {
-    return (
-      <div>
-          <div>
-            <input
-              value={this.props.inputValue}
-              onChange={this.props.handleInputChange}
-            ></input>
-            <button
-              onClick={this.props.handleAddItem}
-            >submit</button>
-          </div>
-          <ul>
-            {
-              this.props.list.map((item,index) => {
-                return <li
-                  key={index}
-                  delete={this.handleDeleteItem}
-                  onClick={this.props.handleDeleteItem.bind(this, index)}
-                >
-                  {item}--{index}</li>
-              })
-            }
-          </ul>
-      </div>
-    );
-  }
+const TodoList = (props) => {
+  return (
+    <div>
+        <HeaderWrapper>Todo List</HeaderWrapper>
+        <InputWrapper>
+          <Input
+            placrholder="请输入你的计划"
+            value={props.inputValue}
+            onChange={props.handleInputChange}
+          ></Input>
+          <Button
+            type="primary"
+            onClick={props.handleAddItem}
+          >submit</Button>
+        </InputWrapper>
+        <BtnWrapper>
+          <Radio.Group value={props.choose} onChange={props.handleChooseChange}>
+            <Radio.Button value="all">所有任务</Radio.Button>
+            <Radio.Button value="unfinished">未完成</Radio.Button>
+            <Radio.Button value="finished">已完成</Radio.Button>
+          </Radio.Group>
+          <Button type="dashed" icon="down">
+            时间
+          </Button>
+          <Button type="dashed" icon="down">
+            优先级
+          </Button>
+        </BtnWrapper>
+        {/* <ul>
+          {
+            props.list.map((item,index) => {
+              return <li
+                key={index}
+                onClick={props.handleDeleteItem.bind(this, index)}
+              >
+                {item}</li>
+            })
+          }
+        </ul> */}
+        <List
+          bordered
+          style={{height: '400px'}}
+          dataSource={props.list}
+          renderItem={item => (
+            <List.Item>
+              {item}
+            </List.Item>
+          )}
+        />
+    </div>
+  );
+
 }
 
 const mapStateToProps = (state) => {
   return {
     inputValue: state.inputValue,
-    list: state.list
+    list: state.list,
+    choose: state.choose
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -56,6 +92,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleDeleteItem: (index) => {
       const action = deleteItemAction(index)
+      dispatch(action)
+    },
+    handleChooseChange: (e) => {
+      const action = chooseChangeAction(e.target.value)
       dispatch(action)
     }
   }
