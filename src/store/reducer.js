@@ -7,7 +7,21 @@ import {
 const defaultState = {
     inputValue: '',
     choose: 'all',
-    list: []
+    totalPage: 1,
+    editVisible: 'false',
+    list: [{
+        text: 'do homework',
+        expireDate: '3月1日',
+        priority: 4
+    },{
+        text: 'play game',
+        expireDate: '4月4日',
+        priority: 5
+    },{
+        text: 'watch TV',
+        expireDate: '5月1日',
+        priority: 5
+    }]   
 }
 export default (state = defaultState, action) => {
     if(action.type === CHANGE_INPUT_VALUE){
@@ -17,7 +31,12 @@ export default (state = defaultState, action) => {
     }
     if(action.type === ADD_ITEM){
         const newState = JSON.parse(JSON.stringify(state));
-        newState.list.push(newState.inputValue)
+        const json = {
+            text: newState.inputValue,
+            expireDate: '不限',
+            priority: 5
+        } 
+        newState.list.push(json)
         newState.inputValue = ''
         return newState;
     }

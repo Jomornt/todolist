@@ -64,17 +64,39 @@ export const InputWrapper = styled.div`
 	flex-direction: row;
 `
 export const BtnWrapper = styled.div`
+	/* width: 500px; */
 	margin-top: 10px;
 	margin-bottom: 10px;
 	display: flex;
 	flex-direction: row;
 `
 export const SortWrapper = styled.div`
+	flex: 1;
+	display: flex;
+	justify-content: flex-end;
+`
+export const ListWrapper = styled.div`
+	height: 350px;
+	border: 1px solid #d9d9d9;
+	border-radius: 5px;
+`
+export const ItemWrapper = styled.div`
+	border-bottom: 1px solid #d9d9d9;
+	padding-left: 20px;
+	padding-right: 20px;
+	line-height: 50px;
+	height: 50px;
+	align-items: center;
 	display: flex;
 	flex-direction: row;
-	position: absolute;
-	right: 0;
-	/* justify-content: flex-end; */
-	align-self: flex-end;
-	align-items: flex-end;
+`
+export const OperateWrapper = styled.div`
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+`
+export const DateWrapper = styled.div`
+	margin-right: 10px;
 `
