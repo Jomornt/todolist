@@ -1,53 +1,68 @@
 import {
   CHANGE_INPUT_VALUE,
-  ADD_ITEM,
-  DELETE_ITEM,
-  CHANGE_CHOOSE
+  CHANGE_CHOOSE,
+  UPDATE_LIST,
+  CHANGE_TOTALPAGE,
+  CHANGE_CURRENT,
+  SORT_BY_PRIORITY,
+  CHANGE_ITEM,
+  CHANGE_PRIORITY
 } from './actionTypes'
+
+
 const defaultState = {
     inputValue: '',
-    choose: 'all',
-    totalPage: 1,
+    choose: 'unfinished',
+    totalPage: 0,
+    current: 1,
     editVisible: 'false',
-    list: [{
-        text: 'do homework',
-        expireDate: '3月1日',
-        priority: 4
-    },{
-        text: 'play game',
-        expireDate: '4月4日',
-        priority: 5
-    },{
-        text: 'watch TV',
-        expireDate: '5月1日',
-        priority: 5
-    }]   
+    list: []
 }
+// function prioritySort(a, b){
+//     return a.priority - b.priority;
+// }
 export default (state = defaultState, action) => {
+    if(action.type === UPDATE_LIST){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.list = action.list;
+        newState.inputValue = '';
+        return newState;
+    }
     if(action.type === CHANGE_INPUT_VALUE){
         const newState = JSON.parse(JSON.stringify(state));
         newState.inputValue = action.value;
         return newState;
     }
-    if(action.type === ADD_ITEM){
-        const newState = JSON.parse(JSON.stringify(state));
-        const json = {
-            text: newState.inputValue,
-            expireDate: '不限',
-            priority: 5
-        } 
-        newState.list.push(json)
-        newState.inputValue = ''
-        return newState;
-    }
-    if(action.type === DELETE_ITEM){
-        const newState = JSON.parse(JSON.stringify(state));
-        newState.list.splice(action.index,1)
-        return newState;
-    }
     if(action.type === CHANGE_CHOOSE){
         const newState = JSON.parse(JSON.stringify(state));
         newState.choose = action.choose
+        return newState;
+    }
+    if(action.type === CHANGE_TOTALPAGE){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.totalPage = action.totalPage
+        return newState;
+    }
+    if(action.type === CHANGE_CURRENT){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.current = action.current
+        return newState;
+    }
+    if(action.type === SORT_BY_PRIORITY){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.list.sort((a,b)=>{
+            return a.priority - b.priority;
+        })
+        return newState;
+    }
+    if(action.type === CHANGE_ITEM){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.list[action.index].text = action.value
+        return newState;
+    }
+    if(action.type === CHANGE_PRIORITY){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.list[action.index].priority = action.value
         return newState;
     }
     return state;
