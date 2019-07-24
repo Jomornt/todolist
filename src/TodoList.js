@@ -28,7 +28,6 @@ import {
   Button,
   Radio,
   Pagination,
-  Checkbox,
   Icon
 } from 'antd';
 
@@ -70,9 +69,10 @@ class TodoList extends Component {
                 return <ItemWrapper
                   key={index}
                 >
-                  <Checkbox
-                    onChange={handleFinish.bind(this, index,list,current,choose)}
-                  ></Checkbox>
+                  <Icon
+                    type="check-circle"
+                    onClick={handleFinish.bind(this, index,list,current,choose)}
+                  />
                   <input
                     value={item.text}
                     style={{height: '20px',border: 'none',marginLeft:'10px'}}
@@ -175,9 +175,7 @@ const mapDispatchToProps = (dispatch) => {
       json.append('state', 'finished')
       json.append('priority', list[index].priority)
       const url = `/list/tododata/${list[index].todo_id}/`
-      if(e.target.checked === true)
-        updatePage('put', json, current, choose, dispatch, url)
-        // e.target.checked = false
+      updatePage('put', json, current, choose, dispatch, url)
     },
     handleDeleteItem: (index, list, current, choose) => {
       const json = new URLSearchParams()
@@ -217,27 +215,6 @@ const mapDispatchToProps = (dispatch) => {
       json.append('priority', e.target.value)
       const url = `/list/tododata/${list[index].todo_id}/`
       updatePage('put', json, current, choose, dispatch, url)
-      // axios({
-      //   method: 'put',
-      //   url:`/list/tododata/${list[index].todo_id}/`,
-      //   headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      //   data: json
-      //   }).then(res => {
-      //   axios.get('/list/tododata',{
-      //     params: { 
-      //       'page': current,
-      //       'choose': choose
-      //     }
-      //     }).then((res) => {
-      //       const data = res.data;
-      //       dispatch(updateListAction(data.results))
-      //       dispatch(totalPageChangeAction(data.count))
-      //     }).catch((error) => {
-      //         console.log(error);
-      //     });
-      //   }).catch((err) => {
-      //     console.log(err);
-      //   });
     },
     handleTotalPageChange: (totalPage) => {
       const action = totalPageChangeAction(totalPage)

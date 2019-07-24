@@ -14,7 +14,6 @@ const defaultState = {
     choose: 'unfinished',
     totalPage: 0,
     current: 1,
-    editVisible: 'false',
     list: []
 }
 
