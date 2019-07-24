@@ -154,7 +154,6 @@ const mapDispatchToProps = (dispatch) => {
     handleItemTextBlur: (index, list, current, choose, e)=>{
       const json = new URLSearchParams()
       json.append('text', e.target.value)
-      json.append('expire_date', list[index].expire_date)
       json.append('state', list[index].state)
       json.append('priority', list[index].priority)
       const url = `/list/tododata/${list[index].todo_id}/`
@@ -163,7 +162,6 @@ const mapDispatchToProps = (dispatch) => {
     handleAddItem: (input, current, choose) => {
       const json = new URLSearchParams()
       json.append('text', input)
-      json.append('expire_date', '不限')
       json.append('state', 'unfinished')
       json.append('priority', 5)
       updatePage('post', json, current, choose, dispatch,'/list/tododata/')
@@ -171,7 +169,6 @@ const mapDispatchToProps = (dispatch) => {
     handleFinish: (index, list, current, choose, e) => {
       const json = new URLSearchParams()
       json.append('text', list[index].text)
-      json.append('expire_date', list[index].expire_date)
       json.append('state', 'finished')
       json.append('priority', list[index].priority)
       const url = `/list/tododata/${list[index].todo_id}/`
@@ -210,7 +207,6 @@ const mapDispatchToProps = (dispatch) => {
     handlePriorityBlur: (index, list, current, choose, e) => {
       const json = new URLSearchParams()
       json.append('text', list[index].text)
-      json.append('expire_date', list[index].expire_date)
       json.append('state', list[index].state)
       json.append('priority', e.target.value)
       const url = `/list/tododata/${list[index].todo_id}/`

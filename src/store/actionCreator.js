@@ -5,7 +5,6 @@ import {
   CHANGE_TOTALPAGE,
   CHANGE_CURRENT,
   SORT_BY_PRIORITY,
-  SORT_BY_EXPIREDATE,
   CHANGE_ITEM,
   CHANGE_PRIORITY
 } from './actionTypes'
@@ -38,10 +37,7 @@ export const sortByPriorityAction = (current) => ({
     type: SORT_BY_PRIORITY,
     current
 })
-export const sortByExpireDateAction = (current) => ({
-    type: SORT_BY_EXPIREDATE,
-    current
-})
+
 export const updateItemAction = (value,index) => ({
     type: CHANGE_ITEM,
     value,
