@@ -13,7 +13,7 @@
 ### 2.技术列表
 
 - 前端：React，Redux，Ant Design
-- 后端：Django,  Django Rest Framework
+- 后端：Django,  Django Rest Framework（todolistBE文件夹）
 - 数据库：PostgreSQL
 
 ### 3.功能截图
