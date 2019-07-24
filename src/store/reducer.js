@@ -9,7 +9,6 @@ import {
   CHANGE_PRIORITY
 } from './actionTypes'
 
-
 const defaultState = {
     inputValue: '',
     choose: 'unfinished',
@@ -18,9 +17,7 @@ const defaultState = {
     editVisible: 'false',
     list: []
 }
-// function prioritySort(a, b){
-//     return a.priority - b.priority;
-// }
+
 export default (state = defaultState, action) => {
     if(action.type === UPDATE_LIST){
         const newState = JSON.parse(JSON.stringify(state));

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
+import { updatePage } from './myAxios'
 import { 
   getInputChangeAction,
   chooseChangeAction,
@@ -19,7 +20,7 @@ import {
   SortWrapper,
   ItemWrapper,
   OperateWrapper,
-  DateWrapper
+  PriorityWrapper
 } from './style';
 import 'antd/dist/antd.css';
 import {
@@ -33,60 +34,65 @@ import {
 
 class TodoList extends Component {
   render(){
+    const { inputValue, choose, totalPage, list, current,
+      handleInputChange, handleItemTextChange, handleItemTextBlur,
+      handleAddItem, handleDeleteItem, handleFinish, handleChooseChange, 
+      handleSortByPriority, handlePriorityChange, handlePriorityBlur,  handleCurrentChange
+    } = this.props;
     return (
       <div>
           <HeaderWrapper>Todo List</HeaderWrapper>
           <InputWrapper>
             <Input
               placrholder="请输入你的计划"
-              value={this.props.inputValue}
-              onChange={this.props.handleInputChange}
+              value={inputValue}
+              onChange={handleInputChange}
             ></Input>
             <Button
               type="primary"
-              onClick={this.props.handleAddItem.bind(this,this.props.inputValue,this.props.current,this.props.choose)}
+              onClick={handleAddItem.bind(this,inputValue,current,choose)}
             >submit</Button>
           </InputWrapper>
           <BtnWrapper>
-            <Radio.Group value={this.props.choose} onChange={this.props.handleChooseChange}>
+            <Radio.Group value={choose} onChange={handleChooseChange}>
               <Radio.Button value="unfinished">未完成</Radio.Button>
               <Radio.Button value="finished">已完成</Radio.Button>
             </Radio.Group>
             <SortWrapper>
-              <Button type="dashed" icon="down" onClick={this.props.handleSortByPriority}>
+              <Button type="dashed" icon="down" onClick={handleSortByPriority}>
                 优先级
               </Button>
             </SortWrapper>
           </BtnWrapper>
           <ListWrapper>
             {
-              this.props.list.map((item,index) => {
+              list.map((item,index) => {
                 return <ItemWrapper
                   key={index}
                 >
                   <Checkbox
-                    onChange={this.props.handleFinish.bind(this, index,this.props.list,this.props.current,this.props.choose)}
+                    onChange={handleFinish.bind(this, index,list,current,choose)}
                   ></Checkbox>
                   <input
                     value={item.text}
                     style={{height: '20px',border: 'none',marginLeft:'10px'}}
-                    onBlur={this.props.handleItemTextBlur.bind(this, index,this.props.list,this.props.current,this.props.choose)}
-                    onChange={this.props.handleItemTextChange.bind(this, index,this.props.list,this.props.current,this.props.choose)}
+                    onBlur={handleItemTextBlur.bind(this, index,list,current,choose)}
+                    onChange={handleItemTextChange.bind(this, index)}
                   ></input>
                   <OperateWrapper>
-                    <DateWrapper>
+                    <PriorityWrapper>
                       <Icon type="flag" />
                       <input
                         value={item.priority}
                         style={{height: '20px',border: 'none',marginLeft:'10px',width:'20px'}}
-                        onBlur={this.props.handlePriorityBlur.bind(this, index,this.props.list,this.props.current,this.props.choose)}
-                        onChange={this.props.handlePriorityChange.bind(this, index,this.props.list,this.props.current,this.props.choose)}
+                        onBlur={handlePriorityBlur.bind(this, index,list,current,choose)}
+                        onChange={handlePriorityChange.bind(this, index,list,current,choose)}
                       ></input>
-                    </DateWrapper>
+                    </PriorityWrapper>
                     <Button
                       type='danger'
                       icon="delete"
-                      onClick={this.props.handleDeleteItem.bind(this, index, this.props.list, this.props.current,this.props.choose)}
+                      onClick={handleDeleteItem.bind(this, index, list, current,choose)}
                       ghost
                     ></Button>
                   </OperateWrapper>
@@ -97,10 +103,11 @@ class TodoList extends Component {
           <Pagination
             style={{textAlign: 'right', marginTop: '10px'}}
             defaultCurrent={1}
+            current={Number(current)}
             pageSize={7}
             simple
-            onChange={this.props.handleCurrentChange.bind(this, this.props.choose)}
-            total={this.props.totalPage} />
+            onChange={handleCurrentChange.bind(this, choose)}
+            total={totalPage} />
       </div>
     );
   }
@@ -125,7 +132,6 @@ const mapStateToProps = (state) => {
     inputValue: state.inputValue,
     choose: state.choose,
     totalPage: state.totalPage,
-    editVisible: state.editVisible,
     list: state.list,
     current: state.current
   }
@@ -140,7 +146,8 @@ const mapDispatchToProps = (dispatch) => {
       const action = getInputChangeAction(e.target.value)
       dispatch(action)
     },
-    handleItemTextChange: (index, list, current, choose, e) => {
+    handleItemTextChange: (index, e) => {
+      console.log(e.target.value)
       const action = updateItemAction(e.target.value,index)
       dispatch(action)
     },
@@ -150,27 +157,8 @@ const mapDispatchToProps = (dispatch) => {
       json.append('expire_date', list[index].expire_date)
       json.append('state', list[index].state)
       json.append('priority', list[index].priority)
-      axios({
-        method: 'put',
-        url:`/list/tododata/${list[index].todo_id}/`,
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        data: json
-        }).then(res => {
-        axios.get('/list/tododata',{
-          params: { 
-            'page': current,
-            'choose': choose
-          }
-          }).then((res) => {
-            const data = res.data;
-            dispatch(updateListAction(data.results))
-            dispatch(totalPageChangeAction(data.count))
-          }).catch((error) => {
-              console.log(error);
-          });
-        }).catch((err) => {
-          console.log(err);
-        });
+      const url = `/list/tododata/${list[index].todo_id}/`
+      updatePage('put', json, current, choose, dispatch, url)
     },
     handleAddItem: (input, current, choose) => {
       const json = new URLSearchParams()
@@ -178,27 +166,7 @@ const mapDispatchToProps = (dispatch) => {
       json.append('expire_date', '不限')
       json.append('state', 'unfinished')
       json.append('priority', 5)
-      axios({
-        method: 'post',
-        url:'/list/tododata/',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        data: json
-        }).then(res => {
-        axios.get('/list/tododata',{
-          params: { 
-            'page': current,
-            'choose': choose
-          }
-          }).then((res) => {
-            const data = res.data;
-            dispatch(updateListAction(data.results))
-            dispatch(totalPageChangeAction(data.count))
-          }).catch((error) => {
-              console.log(error);
-          });
-        }).catch((err) => {
-          console.log(err);
-        });
+      updatePage('post', json, current, choose, dispatch,'/list/tododata/')
     },
     handleFinish: (index, list, current, choose, e) => {
       const json = new URLSearchParams()
@@ -206,51 +174,15 @@ const mapDispatchToProps = (dispatch) => {
       json.append('expire_date', list[index].expire_date)
       json.append('state', 'finished')
       json.append('priority', list[index].priority)
+      const url = `/list/tododata/${list[index].todo_id}/`
       if(e.target.checked === true)
-        axios({
-          method: 'put',
-          url:`/list/tododata/${list[index].todo_id}/`,
-          headers:{'Content-Type':'application/x-www-form-urlencoded'},
-          data: json
-          }).then(res => {
-          axios.get('/list/tododata',{
-            params: { 
-              'page': current,
-              'choose': choose
-            }
-            }).then((res) => {
-              const data = res.data;
-              dispatch(updateListAction(data.results))
-              dispatch(totalPageChangeAction(data.count))
-            }).catch((error) => {
-                console.log(error);
-            });
-          }).catch((err) => {
-            console.log(err);
-          });
+        updatePage('put', json, current, choose, dispatch, url)
+        // e.target.checked = false
     },
     handleDeleteItem: (index, list, current, choose) => {
-      axios({
-        method: 'delete',
-        url:`/list/tododata/${list[index].todo_id}`,
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        }).then(res => {
-        axios.get('/list/tododata',{
-          params: { 
-            'page': current,
-            'choose': choose
-          }
-          }).then((res) => {
-            const data = res.data;
-            dispatch(updateListAction(data.results))
-            dispatch(totalPageChangeAction(data.count))
-          }).catch((error) => {
-              console.log(error);
-          });
-          console.log(res)
-        }).catch((err) => {
-          console.log(err);
-        });
+      const json = new URLSearchParams()
+      const url = `/list/tododata/${list[index].todo_id}/`
+      updatePage('delete', json, current, choose, dispatch, url)
     },
     handleChooseChange: (e) => {
       const action = chooseChangeAction(e.target.value)
@@ -283,27 +215,29 @@ const mapDispatchToProps = (dispatch) => {
       json.append('expire_date', list[index].expire_date)
       json.append('state', list[index].state)
       json.append('priority', e.target.value)
-      axios({
-        method: 'put',
-        url:`/list/tododata/${list[index].todo_id}/`,
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        data: json
-        }).then(res => {
-        axios.get('/list/tododata',{
-          params: { 
-            'page': current,
-            'choose': choose
-          }
-          }).then((res) => {
-            const data = res.data;
-            dispatch(updateListAction(data.results))
-            dispatch(totalPageChangeAction(data.count))
-          }).catch((error) => {
-              console.log(error);
-          });
-        }).catch((err) => {
-          console.log(err);
-        });
+      const url = `/list/tododata/${list[index].todo_id}/`
+      updatePage('put', json, current, choose, dispatch, url)
+      // axios({
+      //   method: 'put',
+      //   url:`/list/tododata/${list[index].todo_id}/`,
+      //   headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      //   data: json
+      //   }).then(res => {
+      //   axios.get('/list/tododata',{
+      //     params: { 
+      //       'page': current,
+      //       'choose': choose
+      //     }
+      //     }).then((res) => {
+      //       const data = res.data;
+      //       dispatch(updateListAction(data.results))
+      //       dispatch(totalPageChangeAction(data.count))
+      //     }).catch((error) => {
+      //         console.log(error);
+      //     });
+      //   }).catch((err) => {
+      //     console.log(err);
+      //   });
     },
     handleTotalPageChange: (totalPage) => {
       const action = totalPageChangeAction(totalPage)

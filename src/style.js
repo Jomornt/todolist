@@ -64,7 +64,6 @@ export const InputWrapper = styled.div`
 	flex-direction: row;
 `
 export const BtnWrapper = styled.div`
-	/* width: 500px; */
 	margin-top: 10px;
 	margin-bottom: 10px;
 	display: flex;
@@ -97,6 +96,6 @@ export const OperateWrapper = styled.div`
 	align-items: center;
 	justify-content: flex-end;
 `
-export const DateWrapper = styled.div`
+export const PriorityWrapper = styled.div`
 	margin-right: 10px;
 `
